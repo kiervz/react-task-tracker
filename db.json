@@ -1,0 +1,28 @@
+{
+  "tasks": [
+    {
+      "text": "Learn React Hooks",
+      "day": "July 26, 2022",
+      "reminder": true,
+      "id": 2
+    },
+    {
+      "id": 3,
+      "text": "Learn Redux",
+      "day": "July 27, 2022",
+      "reminder": false
+    },
+    {
+      "text": "Learn React JS",
+      "day": "July 25, 2022",
+      "reminder": true,
+      "id": 4
+    },
+    {
+      "text": "Take test ",
+      "day": "Monday",
+      "reminder": false,
+      "id": 5
+    }
+  ]
+}

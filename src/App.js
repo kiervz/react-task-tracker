@@ -1,45 +1,66 @@
-import React, { useState }from 'react'
+import React, { useState, useEffect }from 'react'
 import Header from "./components/Header";
 import Tasks from './components/Tasks.js';
 import AddTask from './components/AddTask';
 
 const App = () => {
   const [showAddTask, setShowAddTask] = useState(false);
-  const [tasks, setTasks] = useState([
-    {
-      id: 1,
-      text: "Learn React",
-      day: "July 25, 2022",
-      reminder: false
-    },
-    {
-      id: 2,
-      text: "Learn React Hooks",
-      day: "July 26, 2022",
-      reminder: true
-    },
-    {
-      id: 3,
-      text: "Learn Redux",
-      day: "July 27, 2022",
-      reminder: false
-    }
-  ]);
+  const [tasks, setTasks] = useState([]);
 
-  const addTask = (task) => {
-    let id = (tasks.length) + 2;
-    const newTask = {id, ...task};
-    setTasks([...tasks, newTask]);
+  const fetchTasks = async () => {
+    const response = await fetch('http://localhost:5000/tasks');
+    const data = await response.json();
+
+    setTasks(data);
   }
 
-  const deleteTask = (id) => {
+  const fetchTask = async (id) => {
+    const response = await fetch(`http://localhost:5000/tasks/${id}`);
+    const data = await response.json();
+
+    return data;
+  }
+
+  useEffect(() => {
+    fetchTasks();
+  }, [])
+
+  const addTask = async (task) => {
+    const response = await fetch('http://localhost:5000/tasks', {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(task)
+    });
+
+    const data = await response.json();
+    setTasks([...tasks, data]);
+  }
+
+  const deleteTask = async (id) => {
+    await fetch(`http://localhost:5000/tasks/${id}`, {
+      method: 'DELETE'
+    });
+
     setTasks(tasks.filter((task) => task.id !== id));
   };
 
-  const toggleReminder = (id) => {
+  const toggleReminder = async (id) => {
+    const res = await fetchTask(id);
+    const updatedTask = {...res, reminder: !res.reminder }
+
+    const response = await fetch(`http://localhost:5000/tasks/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(updatedTask)
+    });
+
     setTasks(tasks.map((task) => 
-      task.id === id ? {...task, reminder: !task.reminder} : task
-    ))
+      task.id === id ? {...task, reminder: updatedTask.reminder} : task
+    ));
   }
 
   return (
